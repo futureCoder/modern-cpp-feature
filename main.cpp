@@ -134,10 +134,85 @@ private:
     std::map<int, std::vector<AnnResult>> _res_map;
 };
 
+class ClassTest {
+    ClassTest() {};
+    ~ClassTest();
+};
+
+void heap_adjust(std::vector<int>& nums, int i, int len) {
+    int l = 2 * i + 1;
+    if (l >= nums.size() or l >= len) {
+        return;
+    }
+    while (l < nums.size() && l < len) {
+        if (l + 1 < len && nums[l + 1] < nums[l]) {
+            ++l;
+        }
+        if (nums[l] < nums[i]) {
+            std::swap(nums[l], nums[i]);
+        }
+        i = l;
+        l = i * 2 + 1;
+    }
+}
+
+void make_heap(std::vector<int>& nums) {
+    for (int i = nums.size() / 2; i >= 0; --i) {
+        heap_adjust(nums, i, nums.size());
+    }
+}
+
+int partition(std::vector<int>& nums, int begin, int end) {
+    int pivot = (end - begin) / 2 + begin; // mid
+    while(begin < end) {
+        while(nums[begin] <= nums[pivot] && begin < pivot) ++begin;
+        while(nums[end - 1] >= nums[pivot] && pivot < end) --end;
+        if (begin >= end) break;
+        std::swap(nums[begin], nums[end -1 ]);
+    }
+    return pivot;
+}
+
+void quick(std::vector<int>& nums, int begin, int end) {
+    if (begin >= end) {
+        return;
+    }
+    int pivot = partition(nums, begin, end);
+    quick(nums, begin, pivot);
+    quick(nums, pivot + 1, end);
+}
+void quick(std::vector<int>& nums) {
+    quick(nums, 0, nums.size());
+}
+
 int main() {
-    std::unique_ptr<AnnResultMerger> uptr_null;
-    std::unique_ptr<AnnResultMerger> uptr = std::make_unique<AnnResultMerger>();
-    std::cout << "hello world" << std::endl;
+    std::vector<int> nums {99,1,2,3};
+    quick(nums);
+    for (auto i : nums) {
+        std::cout << i << ",";
+    }
+    std::cout << std::endl;
+
+//    make_heap(nums);
+//    for (auto i : nums) {
+//        std::cout << i << ",";
+//    }
+//    std::cout << std::endl;
+//
+//    for (int i = nums.size() - 1; i > 0; --i) {
+//        std::swap(nums[0], nums[i]);
+//        heap_adjust(nums, 0, i);
+//    }
+//
+//    for (auto i : nums) {
+//        std::cout << i << ",";
+//    }
+//    std::cout << std::endl;
+
+
+//    std::unique_ptr<AnnResultMerger> uptr_null;
+//    std::unique_ptr<AnnResultMerger> uptr = std::make_unique<AnnResultMerger>();
+//    std::cout << "hello world" << std::endl;
 //    std::map<int,int> mmm;
 //    for (auto it = mmm.begin(); it != mmm.end(); it++) {
 //        std::cout << "_user_edu_ctrls.key is:" << it->first;
@@ -231,7 +306,7 @@ int main() {
 
 //    auto funcPtr = +[](){};
 //    static_assert(std::is_same<decltype(funcPtr), void(*)()>::value);
-}
+//}
 
 //int main() {
 //
@@ -269,4 +344,5 @@ int main() {
 ////    algorithms::main();
 ////    cpp_templates::main();
 //    std::cout << "wow" << std::endl;
-//}
+    return 0;
+}
